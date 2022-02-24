@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { NavBar } from "../components";
+import { NavBar, TitleBar } from "../components";
 import UserService from "../Services/UserService";
 
 export async function getServerSideProps() {
@@ -30,6 +30,7 @@ export default function Home({ user }) {
 
       <main>
         <NavBar user={user} />
+        <TitleBar />
       </main>
     </div>
   );

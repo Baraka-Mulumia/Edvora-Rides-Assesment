@@ -8,10 +8,30 @@ body {
 }
 
 :root {
-    --clr-dark: #101010;
+    --clr-dark:
+
 }
 
+input,
+button,
+textarea,
+select {
+    font: inherit;
+    background-color: inherit;
+}
 
-.bg-dark-900 {
-    background-color: var(--clr-dark);
+.custom-bg-dark-900 {
+    background-color: hsl(0 0% 6%);
+}
+
+.custom-bg-dark-800 {
+    background: hsl(0 0% 14%);
+}
+
+.custom-text-accent {
+    color: hsla(0 5% 81%);
+}
+
+.custom-text-light {
+    color: hsla(0 0% 95%);
 }
