@@ -28,6 +28,10 @@ select {
     background: hsl(0 0% 14%);
 }
 
+.custom-bg-dark-700 {
+    background: hsl(0, 0%, 9%);
+}
+
 .custom-text-accent {
     color: hsla(0 5% 81%);
 }
