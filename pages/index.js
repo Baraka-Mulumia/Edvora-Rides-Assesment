@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { NavBar, TitleBar } from "../components";
-import UserService from "../Services/UserService";
+import UserService from "../services/UserService";
 
 export async function getServerSideProps() {
   const response = await UserService.getUser();
