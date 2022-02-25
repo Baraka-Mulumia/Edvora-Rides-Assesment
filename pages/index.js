@@ -45,10 +45,7 @@ export default function Home({ rides, user }) {
 
       <main>
         <NavBar user={user} />
-        <Rides
-          allRides={cleanRidesData(rides, user.station_code)}
-          user={user}
-        />
+        <Rides allRides={cleanRidesData(rides, user.station_code)} />
       </main>
     </div>
   );

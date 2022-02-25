@@ -5,7 +5,7 @@ import RideCategory from "./RideCategory";
 import RideCard from "./RideCard";
 import shortid from "shortid";
 
-const TitleBar = ({ allRides, user }) => {
+const TitleBar = ({ allRides }) => {
   const [categories, setActiveCategory] = UseCategory();
 
   const [filteredRides, setRides] = useState(allRides);
@@ -14,6 +14,14 @@ const TitleBar = ({ allRides, user }) => {
   const upcomingRides = allRides.filter(
     (ride) => ride.category === "Upcoming Rides"
   );
+
+  const nearestRides = () => {
+    const rides = [...allRides];
+    return rides.sort((a, b) => {
+      return a.distance > b.distance ? 1 : a.distance > b.distance ? -1 : 0;
+    });
+  };
+
   const rideCount = (categoryName) => {
     let count =
       categoryName === "Past Rides"
@@ -31,7 +39,7 @@ const TitleBar = ({ allRides, user }) => {
     } else if (categoryName === "Upcoming Rides") {
       setRides(upcomingRides);
     } else {
-      setRides(allRides);
+      setRides(nearestRides());
     }
   };
 
