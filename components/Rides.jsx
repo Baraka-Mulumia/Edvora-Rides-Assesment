@@ -1,26 +1,38 @@
-import React, { useState } from "react";
-import PopOver from "./PopOver";
+import React, { useState, useEffect } from "react";
+import shortid from "shortid";
+import UseRide from "../lib/UseRide";
 import UseCategory from "../lib/UseCategory";
+import RideNav from "./RideNav";
 import RideCategory from "./RideCategory";
 import RideCard from "./RideCard";
-import shortid from "shortid";
+import NoRides from "./NoRides";
 
-const TitleBar = ({ allRides }) => {
+const Rides = ({ allRides }) => {
   const [categories, setActiveCategory] = UseCategory();
-
-  const [filteredRides, setRides] = useState(allRides);
-  const pastRides = allRides.filter((ride) => ride.category === "Past Rides");
-
-  const upcomingRides = allRides.filter(
-    (ride) => ride.category === "Upcoming Rides"
-  );
+  const { filter, states, cities, events, selected } = UseRide(allRides);
+  const isUpcomingRide = (ride) => ride.category === "Upcoming Rides";
+  const isPastRide = (ride) => ride.category === "Past Rides";
 
   const nearestRides = () => {
     const rides = [...allRides];
-    return rides.sort((a, b) => {
-      return a.distance > b.distance ? 1 : a.distance > b.distance ? -1 : 0;
-    });
+    return rides
+      .sort((a, b) => {
+        return a.distance > b.distance ? 1 : a.distance < b.distance ? -1 : 0;
+      })
+      .filter(isUpcomingRide);
   };
+
+  const [filteredRides, setRides] = useState(
+    filter.status ? filter.data : nearestRides()
+  );
+
+  const pastRides = filter.status
+    ? filter.data.filter(isPastRide)
+    : allRides.filter(isPastRide);
+
+  const upcomingRides = filter.status
+    ? filter.data.filter(isUpcomingRide)
+    : allRides.filter(isUpcomingRide);
 
   const rideCount = (categoryName) => {
     let count =
@@ -34,13 +46,13 @@ const TitleBar = ({ allRides }) => {
 
   const handleActiveCategoryChange = (categoryName) => {
     setActiveCategory(categoryName);
-    if (categoryName === "Past Rides") {
-      setRides(pastRides);
-    } else if (categoryName === "Upcoming Rides") {
-      setRides(upcomingRides);
-    } else {
-      setRides(nearestRides());
-    }
+    categoryName === "Past Rides"
+      ? setRides(pastRides)
+      : categoryName === "Upcoming Rides"
+      ? setRides(upcomingRides)
+      : categoryName === "Nearest Rides"
+      ? setRides(nearestRides())
+      : setRides([]);
   };
 
   return (
@@ -59,15 +71,26 @@ const TitleBar = ({ allRides }) => {
             />
           ))}
         </div>
-        <PopOver rides={filteredRides} />
+        <RideNav
+          ridesInfo={{
+            states,
+            cities,
+            events,
+            selected,
+          }}
+        />
       </header>
       <main className="flex flex-col gap-4">
-        {filteredRides.map((ride) => (
-          <RideCard key={shortid.generate()} ride={ride} />
-        ))}
+        {filteredRides.length ? (
+          filteredRides.map((ride) => (
+            <RideCard key={shortid.generate()} ride={ride} />
+          ))
+        ) : (
+          <NoRides />
+        )}
       </main>
     </section>
   );
 };
 
-export default TitleBar;
+export default Rides;

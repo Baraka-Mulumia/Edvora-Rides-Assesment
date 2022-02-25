@@ -1,40 +1,29 @@
 import Head from "next/head";
 import { NavBar, Rides } from "../components";
-import { rides } from "../components/temp";
-import { cleanRidesData } from "../lib/fns";
-// import UserService from "../services/UserService";
-const user = {
-  name: "Malcolm Parker",
-  station_code: 51,
-  url: "https://picsum.photos/200",
-};
-// export async function getServerSideProps() {
-//   const response = await UserService.getUser();
+import { cleanData } from "../lib/fns";
+import RideService from "../services/RideService";
+import UserService from "../services/UserService";
 
-//   if (!response.data) {
-//     return {
-//       notFound: true,
-//     };
-//   }
+export async function getServerSideProps() {
+  const user = await UserService.get();
+  const rides = await RideService.get();
 
-//   return {
-//     props: {
-//       user: response.data,
-//       revalidate: 600,
-//     },
-//   };
-// }
+  if (!user.data || !rides.data) {
+    return {
+      notFound: true,
+    };
+  }
 
-export async function getStaticProps() {
   return {
     props: {
-      rides,
-      user,
+      user: user.data,
+      rides: rides.data,
+      revalidate: 600,
     },
   };
 }
 
-export default function Home({ rides, user }) {
+export default function Home({ user, rides }) {
   return (
     <div>
       <Head>
@@ -45,7 +34,7 @@ export default function Home({ rides, user }) {
 
       <main>
         <NavBar user={user} />
-        <Rides allRides={cleanRidesData(rides, user.station_code)} />
+        <Rides allRides={cleanData(rides, user.station_code)} />
       </main>
     </div>
   );

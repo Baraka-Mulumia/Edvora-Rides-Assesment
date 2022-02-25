@@ -1,12 +1,9 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { useState } from "react";
 import { BsFilterLeft } from "react-icons/bs";
 import { MdOutlineArrowDropDown } from "react-icons/md";
-import UseRide from "../lib/UseRide";
 
-const PopOver = ({ rides }) => {
-  const { states, cities, events, selected } = UseRide(rides);
-
+const RideNav = ({ ridesInfo }) => {
+  const { states, cities, events, selected } = ridesInfo;
   return (
     <PopoverPrimitive.Root>
       <PopoverPrimitive.Trigger>
@@ -74,4 +71,4 @@ const Option = ({ value, onclick }) => (
   </p>
 );
 
-export default PopOver;
+export default RideNav;

@@ -1,16 +1,7 @@
-import axios from "axios";
-
-const apiClient = axios.create({
-  baseURL: process.env.baseURL,
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  },
-  timeout: 10000,
-});
+import apiClient from "./axios_config";
 
 const UserService = {
-  async getUser() {
+  async get() {
     return await apiClient.get("/user");
   },
 };
