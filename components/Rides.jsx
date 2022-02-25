@@ -1,59 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 import shortid from "shortid";
-import UseRide from "../lib/UseRide";
-import UseCategory from "../lib/UseCategory";
 import RideNav from "./RideNav";
 import RideCategory from "./RideCategory";
 import RideCard from "./RideCard";
 import NoRides from "./NoRides";
 
-const Rides = ({ allRides }) => {
-  const [categories, setActiveCategory] = UseCategory();
-  const { filter, states, cities, events, selected } = UseRide(allRides);
-  const isUpcomingRide = (ride) => ride.category === "Upcoming Rides";
-  const isPastRide = (ride) => ride.category === "Past Rides";
+import {
+  selectPastRides,
+  selectRides,
+  selectTimeFilter,
+  selectUpcomingRides,
+  showNearestRides,
+  showPastRides,
+  showUpcomingRides,
+} from "../features/ride/rideSlice";
 
-  const nearestRides = () => {
-    const rides = [...allRides];
-    return rides
-      .sort((a, b) => {
-        return a.distance > b.distance ? 1 : a.distance < b.distance ? -1 : 0;
-      })
-      .filter(isUpcomingRide);
-  };
+const Rides = () => {
+  const rides = useSelector(selectRides);
+  const pastRides = useSelector(selectPastRides);
+  const upcomingRides = useSelector(selectUpcomingRides);
+  const timeFilter = useSelector(selectTimeFilter);
 
-  const [filteredRides, setRides] = useState(
-    filter.status ? filter.data : nearestRides()
-  );
+  const dispatch = useDispatch();
 
-  const pastRides = filter.status
-    ? filter.data.filter(isPastRide)
-    : allRides.filter(isPastRide);
-
-  const upcomingRides = filter.status
-    ? filter.data.filter(isUpcomingRide)
-    : allRides.filter(isUpcomingRide);
-
-  const rideCount = (categoryName) => {
-    let count =
-      categoryName === "Past Rides"
-        ? pastRides.length
-        : categoryName === "Upcoming Rides"
-        ? upcomingRides.length
-        : 0;
-    return count;
-  };
-
-  const handleActiveCategoryChange = (categoryName) => {
-    setActiveCategory(categoryName);
-    categoryName === "Past Rides"
-      ? setRides(pastRides)
-      : categoryName === "Upcoming Rides"
-      ? setRides(upcomingRides)
-      : categoryName === "Nearest Rides"
-      ? setRides(nearestRides())
-      : setRides([]);
-  };
+  const displayPastRides = () => dispatch(showPastRides());
+  const displayUpcomingRides = () => dispatch(showUpcomingRides());
+  const displayNearestRides = () => dispatch(showNearestRides());
 
   return (
     <section
@@ -62,29 +36,30 @@ const Rides = ({ allRides }) => {
     >
       <header className="flex justify-between px-4 py-4 w-full font-normal  text-lg">
         <div className="flex justify-between items-center gap-4">
-          {categories.map((category) => (
-            <RideCategory
-              key={category.name}
-              rideCount={rideCount(category.name)}
-              category={category}
-              makeActive={handleActiveCategoryChange}
-            />
-          ))}
+          <RideCategory
+            name="Nearest Rides"
+            isActive={!timeFilter}
+            handleClick={() => displayNearestRides()}
+          />
+          <RideCategory
+            name="Upcoming Rides"
+            count={upcomingRides.length}
+            isActive={timeFilter === "Upcoming Rides"}
+            handleClick={() => displayUpcomingRides()}
+          />
+          <RideCategory
+            name="Past Rides"
+            count={pastRides.length}
+            isActive={timeFilter === "Past Rides"}
+            handleClick={() => displayPastRides()}
+          />
         </div>
-        <RideNav
-          ridesInfo={{
-            states,
-            cities,
-            events,
-            selected,
-          }}
-        />
+
+        <RideNav />
       </header>
       <main className="flex flex-col gap-4">
-        {filteredRides.length ? (
-          filteredRides.map((ride) => (
-            <RideCard key={shortid.generate()} ride={ride} />
-          ))
+        {rides && rides.length ? (
+          rides.map((ride) => <RideCard key={shortid.generate()} ride={ride} />)
         ) : (
           <NoRides />
         )}

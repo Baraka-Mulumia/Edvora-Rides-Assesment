@@ -1,8 +1,12 @@
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import Head from "next/head";
+
 import { NavBar, Rides } from "../components";
-import { cleanData } from "../lib/fns";
+import { ridesWithDistance, extract } from "../lib/fns";
 import RideService from "../services/RideService";
 import UserService from "../services/UserService";
+import { setRides } from "../features/ride/rideSlice";
 
 export async function getServerSideProps() {
   const user = await UserService.get();
@@ -24,6 +28,15 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ user, rides }) {
+  const dispatch = useDispatch();
+  const ridesInfo = ridesWithDistance(rides, user.station_code);
+  const cities = extract(ridesInfo, "city");
+  const states = extract(ridesInfo, "state");
+
+  useEffect(() => {
+    dispatch(setRides(ridesInfo));
+  }, [dispatch, ridesInfo]);
+
   return (
     <div>
       <Head>
@@ -34,7 +47,7 @@ export default function Home({ user, rides }) {
 
       <main>
         <NavBar user={user} />
-        <Rides allRides={cleanData(rides, user.station_code)} />
+        <Rides allRides={ridesInfo} cities={cities} states={states} />
       </main>
     </div>
   );

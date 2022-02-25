@@ -1,14 +1,14 @@
-const RideCategory = ({ category, makeActive, rideCount }) => (
+const RideCategory = ({ name, isActive, count, handleClick }) => (
   <p
-    onClick={() => makeActive(category.name)}
+    onClick={() => handleClick()}
     className={`cursor-pointer hover:text-white focus:text-white whitespace-nowrap ${
-      category.active
+      isActive
         ? "border-b-2  border-solid border-white text-white font-medium"
         : "custom-text-accent"
     }`}
   >
-    {category.name}
-    {category.hasCount && <span>({rideCount})</span>}
+    {name}
+    {count != null && count != undefined && `(${count})`}
   </p>
 );
 
