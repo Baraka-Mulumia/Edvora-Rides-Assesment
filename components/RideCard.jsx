@@ -37,8 +37,7 @@ const RideCard = ({ ride }) => {
 const DetailItem = ({ item, detail }) => (
   <p>
     <span className="custom-text-accent">{item}</span>:&nbsp;
-    <span className="custom-test-light"></span>
-    {detail}
+    <span className="custom-text-light">{detail}</span>
   </p>
 );
 
